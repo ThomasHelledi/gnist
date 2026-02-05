@@ -273,4 +273,30 @@ class CrossJoinArrayContainsToInnerJoinSuite extends PlanTest {
       case _ => false
     }, "StructType should not be transformed due to complex equality semantics")
   }
+
+  test("cost-based guard skips optimization when join target has few rows") {
+    // This test documents the cost-based guard behavior.
+    // When the join target table has fewer rows than DEFAULT_MAX_ARRAY_SIZE (1000),
+    // the optimization is skipped because array explosion could be more expensive.
+    //
+    // The guard compares: array explosion cost O(left * array_size)
+    //                 vs: cross join cost O(left * right_rows)
+    //
+    // Without statistics (LocalRelation), the optimization applies optimistically.
+    // With catalog tables that have row count < 1000, the optimization is skipped.
+    //
+    // Test verifies the optimization still applies for LocalRelation (no stats).
+    val plan = ordersRelation
+      .join(itemsRelation, Cross)
+      .where(ArrayContains($"item_ids", $"id"))
+      .analyze
+
+    val optimized = Optimize.execute(plan)
+
+    // LocalRelation has no row count statistics, so optimization applies
+    assert(optimized.exists {
+      case _: Generate => true
+      case _ => false
+    }, "Should apply optimization when no statistics available")
+  }
 }

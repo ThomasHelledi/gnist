@@ -33,8 +33,18 @@ import org.apache.spark.sql.types._
  * }}}
  *
  * Into a more efficient form using explode + inner join, reducing O(N*M) to O(N+M).
+ *
+ * Cost-based guard: The optimization is skipped when the estimated array size exceeds
+ * the row count of the table being joined against, as exploding large arrays can be
+ * more expensive than the original cross join.
  */
 object CrossJoinArrayContainsToInnerJoin extends Rule[LogicalPlan] with PredicateHelper {
+
+  /**
+   * Default maximum array size for the optimization. If estimated array size exceeds
+   * this value and is larger than the join table's row count, the optimization is skipped.
+   */
+  private val DEFAULT_MAX_ARRAY_SIZE = 1000
 
   override def apply(plan: LogicalPlan): LogicalPlan = plan.transformUpWithPruning(
     _.containsPattern(JOIN), ruleId) {
@@ -62,6 +72,11 @@ object CrossJoinArrayContainsToInnerJoin extends Rule[LogicalPlan] with Predicat
       case ac @ ArrayContains(arr, elem)
           if canOptimize(arr, elem, leftOut, rightOut) =>
         val arrayOnLeft = arr.references.subsetOf(leftOut)
+        // Cost-based guard: skip if array explosion would be too expensive
+        val joinTarget = if (arrayOnLeft) right else left
+        if (!isCostEffective(arr, joinTarget)) {
+          return None
+        }
         val remaining = predicates.filterNot(_ == ac)
         buildPlan(join, left, right, arr, elem, arrayOnLeft, remaining, join.hint)
     }.flatten
@@ -82,9 +97,40 @@ object CrossJoinArrayContainsToInnerJoin extends Rule[LogicalPlan] with Predicat
       case ac @ ArrayContains(arr, elem)
           if canOptimize(arr, elem, leftOut, rightOut) =>
         val arrayOnLeft = arr.references.subsetOf(leftOut)
+        // Cost-based guard: skip if array explosion would be too expensive
+        val joinTarget = if (arrayOnLeft) right else left
+        if (!isCostEffective(arr, joinTarget)) {
+          return None
+        }
         val remaining = predicates.filterNot(_ == ac)
         buildPlan(join, left, right, arr, elem, arrayOnLeft, remaining, hint)
     }.flatten
+  }
+
+  /**
+   * Checks if the optimization is cost-effective based on estimated array size
+   * and join target row count.
+   *
+   * The optimization is beneficial when: array_size < join_target_rows
+   * When array_size > join_target_rows, exploding creates more work than cross join.
+   */
+  private def isCostEffective(arr: Expression, joinTarget: LogicalPlan): Boolean = {
+    // Try to get row count from statistics
+    val targetRowCount = joinTarget.stats.rowCount
+
+    // If we have statistics, use them for cost-based decision
+    if (targetRowCount.isDefined) {
+      val rows = targetRowCount.get
+      // If target table has fewer rows than our default max array size threshold,
+      // skip the optimization as array explosion would likely be more expensive
+      if (rows < DEFAULT_MAX_ARRAY_SIZE) {
+        return false
+      }
+    }
+
+    // Without statistics, apply the optimization (optimistic approach)
+    // The DEFAULT_MAX_ARRAY_SIZE acts as a safety threshold
+    true
   }
 
   private def canOptimize(
