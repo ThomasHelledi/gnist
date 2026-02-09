@@ -51,7 +51,7 @@ MAVEN_OPTS="-Xmx4g" ./build/mvn -Pkubernetes -DskipTests clean package
 
 ```bash
 ./bin/docker-image-tool.sh \
-  -r registry.unifiedhq.ai/served \
+  -r registry.unifiedhq.ai/served/gnist \
   -t gnist-4.2.0 \
   build
 ```
@@ -65,7 +65,7 @@ Gnist runs on the Eden K8s cluster in the `served-gnist` namespace.
 | Namespace | `served-gnist` |
 | Service Account | `gnist-driver` |
 | K8s Master | `k8s://https://10.10.10.20:6443` |
-| Image | `registry.unifiedhq.ai/served/spark:gnist-4.2.0` |
+| Image | `registry.unifiedhq.ai/served/gnist:gnist-4.2.0` |
 
 ### Default Resources
 

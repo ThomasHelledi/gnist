@@ -20,7 +20,7 @@ triggers:
 variables:
   GNIST_VERSION: "4.2.0-gnist"
   REGISTRY: "registry.unifiedhq.ai"
-  IMAGE: "served/spark"
+  IMAGE: "served/gnist"
   TAG: "gnist-4.2.0"
   JAVA_HOME: "/usr/lib/jvm/java-21"
 
