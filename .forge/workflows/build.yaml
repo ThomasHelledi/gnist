@@ -1,0 +1,75 @@
+# Gnist Build Pipeline
+# Triggered on push to master
+# Builds Spark with K8s profile, creates Docker image, pushes to registry
+
+name: Gnist Build
+version: 2026.2.0
+
+triggers:
+  - type: push
+    branches: [master]
+  - type: manual
+    parameters:
+      - name: skip_tests
+        type: boolean
+        default: true
+      - name: push_image
+        type: boolean
+        default: true
+
+variables:
+  GNIST_VERSION: "4.2.0-gnist"
+  REGISTRY: "registry.unifiedhq.ai"
+  IMAGE: "served/spark"
+  TAG: "gnist-4.2.0"
+  JAVA_HOME: "/usr/lib/jvm/java-21"
+
+stages:
+  - name: Build
+    description: "Maven build with Kubernetes profile"
+    steps:
+      - name: mvn-build
+        type: shell
+        config:
+          command: |
+            MAVEN_OPTS="-Xmx4g" ./build/mvn \
+              -Pkubernetes \
+              -DskipTests \
+              clean package
+          timeout: 1800
+
+  - name: Docker
+    description: "Build Spark Docker image"
+    steps:
+      - name: docker-build
+        type: shell
+        config:
+          command: |
+            ./bin/docker-image-tool.sh \
+              -r ${REGISTRY}/${IMAGE} \
+              -t ${TAG} \
+              build
+          timeout: 600
+
+  - name: Push
+    description: "Push to registry"
+    condition: "{{ parameters.push_image }}"
+    steps:
+      - name: docker-push
+        type: shell
+        config:
+          command: |
+            ./bin/docker-image-tool.sh \
+              -r ${REGISTRY}/${IMAGE} \
+              -t ${TAG} \
+              push
+          timeout: 300
+
+notifications:
+  - type: eventbus
+    channel: "served:gnist:build"
+    on: [success, failure]
+  - type: signalr
+    hub: "/hubs/devops"
+    event: "GnistBuildStatusChanged"
+    on: [success, failure]
