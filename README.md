@@ -1,174 +1,133 @@
-# Apache Spark
+# Gnist
 
-Spark is a unified analytics engine for large-scale data processing. It provides
-high-level APIs in Scala, Java, Python, and R (Deprecated), and an optimized engine that
-supports general computation graphs for data analysis. It also supports a
-rich set of higher-level tools including Spark SQL for SQL and DataFrames,
-pandas API on Spark for pandas workloads, MLlib for machine learning, GraphX for graph processing,
-and Structured Streaming for stream processing.
+> *Gnist* means *Spark* in Danish.
 
-- Official version: <https://spark.apache.org/>
-- Development version: <https://apache.github.io/spark/>
+Apache Spark 4.2.0 fork, integrated into the Served Unified Data Platform.
 
-[![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_main.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_main.yml)
-[![PySpark Coverage](https://codecov.io/gh/apache/spark/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/spark)
-[![PyPI Downloads](https://static.pepy.tech/personalized-badge/pyspark?period=month&units=international_system&left_color=black&right_color=orange&left_text=PyPI%20downloads)](https://pypi.org/project/pyspark/)
+## What is Gnist?
 
+Gnist is our production Spark distribution, built for Kubernetes-native deployment on the Eden cluster. It powers the Unified Data Platform's batch processing, SQL analytics, and streaming pipelines.
 
-## Online Documentation
+**Based on:** Apache Spark 4.2.0
+**Upstream:** [github.com/apache/spark](https://github.com/apache/spark)
+**License:** Apache 2.0
 
-You can find the latest Spark documentation, including a programming
-guide, on the [project web page](https://spark.apache.org/documentation.html).
-This README file only contains basic setup instructions.
-
-## Build Pipeline Status
-
-| Branch     | Status                                                                                                                                                                                                          |
-|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| master     | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/release.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/release.yml)                                               |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_java21.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_java21.yml)                                     |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_non_ansi.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_non_ansi.yml)                                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_uds.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_uds.yml)                                           |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_rockdb_as_ui_backend.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_rockdb_as_ui_backend.yml)         |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_maven.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_maven.yml)                                       |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_maven_java21.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_maven_java21.yml)                         |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_maven_java21_macos26.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_maven_java21_macos26.yml)          |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_maven_java21_arm.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_maven_java21_arm.yml)                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_coverage.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_coverage.yml)                                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_pypy3.10.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_pypy3.10.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.10.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.10.yml)                           |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.11.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.11.yml)                           |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_pypy3.11.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_pypy3.11.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.12_classic_only.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.12_classic_only.yml) |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.12_arm.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.12_arm.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.12_macos26.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.12_macos26.yml)           |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.12_pandas_3.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.12_pandas_3.yml)         |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.13.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.13.yml)                           |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.14.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.14.yml)                           |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_3.14_nogil.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_3.14_nogil.yml)               |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_minimum.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_minimum.yml)                     |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_ps_minimum.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_ps_minimum.yml)               |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_connect40.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_connect40.yml)                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_python_connect.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_python_connect.yml)                     |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_sparkr_window.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_sparkr_window.yml)                       |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/publish_snapshot.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/publish_snapshot.yml)                             |
-| branch-4.1 | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41.yml)                                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41_java21.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41_java21.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41_non_ansi.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41_non_ansi.yml)               |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41_maven.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41_maven.yml)                     |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41_maven_java21.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41_maven_java21.yml)       |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41_python.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41_python.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch41_python_pypy3.10.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch41_python_pypy3.10.yml) |
-| branch-4.0 | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40.yml)                                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40_java21.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40_java21.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40_non_ansi.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40_non_ansi.yml)               |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40_maven.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40_maven.yml)                     |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40_maven_java21.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40_maven_java21.yml)       |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40_python.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40_python.yml)                   |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch40_python_pypy3.10.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch40_python_pypy3.10.yml) |
-| branch-3.5 | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch35.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch35.yml)                                 |
-|            | [![GitHub Actions Build](https://github.com/apache/spark/actions/workflows/build_branch35_python.yml/badge.svg)](https://github.com/apache/spark/actions/workflows/build_branch35_python.yml)                   |
-
-
-## Building Spark
-
-Spark is built using [Apache Maven](https://maven.apache.org/).
-To build Spark and its example programs, run:
+## Quick Start
 
 ```bash
-./build/mvn -DskipTests clean package
+# Build from source (Kubernetes profile)
+served gnist build
+
+# Submit a Spark job
+served gnist submit --class org.apache.spark.examples.SparkPi examples/jars/spark-examples.jar
+
+# Run Spark SQL
+served gnist sql "SELECT 1 + 1"
+
+# Check running jobs
+served gnist jobs
+
+# Stream logs from a job
+served gnist logs <jobId>
 ```
 
-(You do not need to do this if you downloaded a pre-built package.)
+## Build
 
-More detailed documentation is available from the project site, at
-["Building Spark"](https://spark.apache.org/docs/latest/building-spark.html).
-
-For general development tips, including info on developing Spark using an IDE, see ["Useful Developer Tools"](https://spark.apache.org/developer-tools.html).
-
-## Interactive Scala Shell
-
-The easiest way to start using Spark is through the Scala shell:
+### Using served CLI (recommended)
 
 ```bash
-./bin/spark-shell
+served gnist build          # Maven build with K8s profile
+served gnist image          # Build Docker image
 ```
 
-Try the following command, which should return 1,000,000,000:
-
-```scala
-scala> spark.range(1000 * 1000 * 1000).count()
-```
-
-## Interactive Python Shell
-
-Alternatively, if you prefer Python, you can use the Python shell:
+### Manual Maven build
 
 ```bash
-./bin/pyspark
+export JAVA_HOME=/usr/lib/jvm/java-21
+MAVEN_OPTS="-Xmx4g" ./build/mvn -Pkubernetes -DskipTests clean package
 ```
 
-And run the following command, which should also return 1,000,000,000:
-
-```python
->>> spark.range(1000 * 1000 * 1000).count()
-```
-
-## Example Programs
-
-Spark also comes with several sample programs in the `examples` directory.
-To run one of them, use `./bin/run-example <class> [params]`. For example:
+### Docker image
 
 ```bash
-./bin/run-example SparkPi
+./bin/docker-image-tool.sh \
+  -r registry.unifiedhq.ai/served \
+  -t gnist-4.2.0 \
+  build
 ```
 
-will run the Pi example locally.
+## Deployment
 
-You can set the MASTER environment variable when running examples to submit
-examples to a cluster. This can be spark:// URL,
-"yarn" to run on YARN, and "local" to run
-locally with one thread, or "local[N]" to run locally with N threads. You
-can also use an abbreviated class name if the class is in the `examples`
-package. For instance:
+Gnist runs on the Eden K8s cluster in the `served-gnist` namespace.
 
-```bash
-MASTER=spark://host:7077 ./bin/run-example SparkPi
+| Resource | Value |
+|----------|-------|
+| Namespace | `served-gnist` |
+| Service Account | `gnist-driver` |
+| K8s Master | `k8s://https://10.10.10.20:6443` |
+| Image | `registry.unifiedhq.ai/served/spark:gnist-4.2.0` |
+
+### Default Resources
+
+| Component | Memory | CPU |
+|-----------|--------|-----|
+| Driver | 2Gi (req) / 4Gi (limit) | 1 (req) / 2 (limit) |
+| Executor | 4Gi (req) / 8Gi (limit) | 2 (req) / 4 (limit) |
+
+## API
+
+REST API via the ServedApp DevOps module:
+
+```
+POST   /api/devops/gnist/submit        # Submit job
+GET    /api/devops/gnist/{jobId}        # Job status
+GET    /api/devops/gnist/{jobId}/logs   # Stream logs
+DELETE /api/devops/gnist/{jobId}        # Kill job
+GET    /api/devops/gnist                # List all jobs
+GET    /api/devops/gnist/cluster        # Cluster status
+GET    /api/devops/gnist/health         # Health check
 ```
 
-Many of the example programs print usage help if no params are given.
+Real-time updates via SignalR hub `/hubs/devops` (subscribe to `GnistJobStatusChanged`).
 
-## Running Tests
+## Forge Pipeline
 
-Testing first requires [building Spark](#building-spark). Once Spark is built, tests
-can be run using:
+The `.forge/workflows/gnist-build.yaml` pipeline handles:
 
-```bash
-./dev/run-tests
-```
-
-Please see the guidance on how to
-[run tests for a module, or individual tests](https://spark.apache.org/developer-tools.html#individual-tests).
-
-There is also a Kubernetes integration test, see resource-managers/kubernetes/integration-tests/README.md
-
-## A Note About Hadoop Versions
-
-Spark uses the Hadoop core library to talk to HDFS and other Hadoop-supported
-storage systems. Because the protocols have changed in different versions of
-Hadoop, you must build Spark against the same version that your cluster runs.
-
-Please refer to the build documentation at
-["Specifying the Hadoop Version and Enabling YARN"](https://spark.apache.org/docs/latest/building-spark.html#specifying-the-hadoop-version-and-enabling-yarn)
-for detailed guidance on building for a particular distribution of Hadoop, including
-building for particular Hive and Hive Thriftserver distributions.
+1. Checkout with submodules
+2. Maven build (`-Pkubernetes -DskipTests`)
+3. Docker image build
+4. Push to `registry.unifiedhq.ai`
+5. K8s RBAC apply (optional)
 
 ## Configuration
 
-Please refer to the [Configuration Guide](https://spark.apache.org/docs/latest/configuration.html)
-in the online documentation for an overview on how to configure Spark.
+See `.served/gnist.unified` in the ServedApp monorepo for all settings.
 
-## Contributing
+## Syncing with Upstream
 
-Please review the [Contribution to Spark guide](https://spark.apache.org/contributing.html)
-for information on how to get started contributing to the project.
+```bash
+git fetch upstream
+git merge upstream/master
+# Resolve conflicts, test, push
+git push forge master
+```
+
+## Architecture
+
+```
+ServedApp (monorepo)
+  ├── .served/gnist.unified          # Config
+  ├── .forge/workflows/gnist-build.yaml  # CI/CD
+  ├── forge/k8s/gnist-rbac.yaml      # K8s RBAC
+  ├── Served/Apis/DevOps/
+  │   ├── Controllers/GnistController.cs  # REST API
+  │   ├── Services/GnistJobService.cs     # Job lifecycle
+  │   └── Models/GnistModels.cs           # DTOs
+  ├── Served/Tools/CLI/Commands/GnistCommand.cs  # CLI
+  └── tools/gnist/                    # This repo (Spark fork)
+```
+
+---
+
+*Part of the Served Unified Data Platform. Built by Thomas and Atlas.*
